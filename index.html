@@ -20,19 +20,17 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Noto Sans KR', sans-serif;
-      min-height: 100vh;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Grid noise texture overlay ── */
+    /* ── Grid texture ── */
     body::before {
       content: '';
       position: fixed;
@@ -44,10 +42,28 @@
       z-index: 0;
     }
 
-    /* ── Radial glow ── */
-    body::after {
+    /* ── Shared wrap ── */
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* ══════════════════════════════
+       TOP FRAME
+    ══════════════════════════════ */
+    #frame-top {
+      position: relative;
+      z-index: 1;
+      background: var(--bg);
+      padding-bottom: 60px;
+    }
+
+    #frame-top::after {
       content: '';
-      position: fixed;
+      position: absolute;
       top: -20vh;
       left: 50%;
       transform: translateX(-50%);
@@ -58,16 +74,6 @@
       z-index: 0;
     }
 
-    /* ── Layout ── */
-    .wrap {
-      position: relative;
-      z-index: 1;
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 32px;
-    }
-
-    /* ── Header ── */
     header {
       padding: 48px 0 0;
       display: flex;
@@ -76,34 +82,20 @@
     }
 
     .logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
+      font-family: 'Franklin Gothic Demi', 'Franklin Gothic Medium', Arial, sans-serif;
+      font-weight: 700;
       font-size: 1.1rem;
       letter-spacing: 0.12em;
       color: var(--text);
       text-transform: uppercase;
     }
-
     .logo span { color: var(--accent); }
 
-    .dot-bar {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .dot-bar span {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--muted);
-    }
-
+    .dot-bar { display: flex; gap: 6px; align-items: center; }
+    .dot-bar span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
     .dot-bar span:first-child { background: var(--accent); }
 
-    /* ── Hero ── */
-    .hero {
-      padding: 120px 0 80px;
-    }
+    .hero { padding: 28px 0 60px; }
 
     .tag {
       display: inline-flex;
@@ -120,7 +112,6 @@
       margin-bottom: 48px;
       animation: fadeUp 0.8s ease both;
     }
-
     .tag::before {
       content: '';
       width: 5px; height: 5px;
@@ -142,11 +133,7 @@
       letter-spacing: -0.01em;
       animation: fadeUp 0.8s 0.1s ease both;
     }
-
-    h1 em {
-      font-style: normal;
-      color: var(--accent);
-    }
+    h1 em { font-style: normal; color: var(--accent); }
 
     .subtitle {
       margin-top: 36px;
@@ -158,16 +145,49 @@
       animation: fadeUp 0.8s 0.2s ease both;
     }
 
-    /* ── Divider line ── */
-    .rule {
+    /* ── Learn more link ── */
+    #frame-top-footer {
+      position: relative;
+      z-index: 1;
+      background: var(--bg);
+      padding-bottom: 40px;
+    }
+    .learn-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0,200,160,0.3);
+      padding-bottom: 2px;
+      transition: border-color 0.2s, opacity 0.2s;
+    }
+    .learn-more:hover { border-color: var(--accent); opacity: 0.8; }
+    .learn-more svg { width: 14px; height: 14px; }
+
+    
+    .frame-divider {
       width: 100%;
       height: 1px;
       background: var(--border);
-      margin: 64px 0;
-      animation: fadeUp 0.8s 0.3s ease both;
+      position: relative;
+      z-index: 1;
     }
 
-    /* ── Award card ── */
+/* ══════════════════════════════
+       BOTTOM FRAME
+    ══════════════════════════════ */
+    #frame-bottom {
+      position: relative;
+      z-index: 1;
+      background: var(--bg);
+      padding-top: 64px;
+    }
+
     .award {
       border: 1px solid var(--border);
       border-left: 3px solid var(--accent);
@@ -177,12 +197,10 @@
       grid-template-columns: auto 1fr;
       gap: 32px;
       align-items: center;
-      animation: fadeUp 0.8s 0.35s ease both;
+      animation: fadeUp 0.8s 0.1s ease both;
     }
-
     .award-icon {
-      width: 52px;
-      height: 52px;
+      width: 52px; height: 52px;
       background: var(--accent-dim);
       border: 1px solid rgba(0,200,160,0.25);
       border-radius: 4px;
@@ -191,17 +209,14 @@
       justify-content: center;
       flex-shrink: 0;
     }
-
     .award-icon svg {
-      width: 24px;
-      height: 24px;
+      width: 24px; height: 24px;
       stroke: var(--accent);
       fill: none;
       stroke-width: 1.5;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
-
     .award-label {
       font-family: 'DM Mono', monospace;
       font-size: 0.65rem;
@@ -210,14 +225,12 @@
       color: var(--muted);
       margin-bottom: 10px;
     }
-
     .award-title {
       font-size: 0.95rem;
       font-weight: 500;
       color: var(--text);
       line-height: 1.7;
     }
-
     .award-year {
       font-family: 'DM Mono', monospace;
       font-size: 0.75rem;
@@ -225,7 +238,6 @@
       margin-top: 8px;
     }
 
-    /* ── Info grid ── */
     .info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -233,14 +245,9 @@
       background: var(--border);
       border: 1px solid var(--border);
       margin-top: 24px;
-      animation: fadeUp 0.8s 0.45s ease both;
+      animation: fadeUp 0.8s 0.2s ease both;
     }
-
-    .info-cell {
-      background: var(--surface);
-      padding: 28px 32px;
-    }
-
+    .info-cell { background: var(--surface); padding: 28px 32px; }
     .info-cell-label {
       font-family: 'DM Mono', monospace;
       font-size: 0.62rem;
@@ -249,7 +256,6 @@
       color: var(--muted);
       margin-bottom: 10px;
     }
-
     .info-cell-value {
       font-size: 0.9rem;
       font-weight: 400;
@@ -257,17 +263,14 @@
       line-height: 1.6;
     }
 
-    /* ── Footer ── */
     footer {
-      margin-top: 100px;
+      margin-top: 80px;
       padding: 40px 0;
       border-top: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      animation: fadeUp 0.8s 0.55s ease both;
     }
-
     .footer-logo {
       font-family: 'Syne', sans-serif;
       font-weight: 700;
@@ -276,7 +279,6 @@
       text-transform: uppercase;
       color: var(--muted);
     }
-
     .footer-copy {
       font-family: 'DM Mono', monospace;
       font-size: 0.65rem;
@@ -284,83 +286,101 @@
       color: var(--muted);
     }
 
-    /* ── Animations ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Mobile ── */
     @media (max-width: 600px) {
-      .award { grid-template-columns: 1fr; gap: 20px; padding: 28px 24px; }
-      .info-grid { grid-template-columns: 1fr; }
-      h1 { font-size: 2.8rem; }
       .wrap { padding: 0 20px; }
       header { padding-top: 32px; }
+      h1 { font-size: 2.8rem; }
+      .hero { padding: 72px 0 48px; }
+      .award { grid-template-columns: 1fr; gap: 20px; padding: 28px 24px; }
+      .info-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
 
-    <header>
-      <div class="logo">Brax<span>cell</span> Systems</div>
-      <div class="dot-bar">
-        <span></span><span></span><span></span>
-      </div>
-    </header>
+  <!-- ══ TOP FRAME ══ -->
+  <div id="frame-top">
+    <div class="wrap">
+      <header>
+        <div class="logo">Brax<span>cell</span> Systems</div>
+        <div class="dot-bar">
+          <span></span><span></span><span></span>
+        </div>
+      </header>
 
-    <section class="hero">
-      <div class="tag">Regenerative Medicine · Cell Technology</div>
+      <section class="hero">
+        <div class="tag">Regenerative Medicine · Cell Technology</div>
 
-      <h1>Building the<br/>future of<br/><em>cell therapy.</em></h1>
+        <h1>Building the future of <em>cell therapy.</em></h1>
 
-      <p class="subtitle">
-        첨단 재생치료제 생산을 위한 핵심 기반기술을 개발하는<br/>
-        예비창업팀입니다. 공공 기술을 시장과 연계하여<br/>
-        치료제 제조의 새로운 표준을 만들어갑니다.
-      </p>
-    </section>
-
-    <div class="rule"></div>
-
-    <div class="award">
-      <div class="award-icon">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      </div>
-      <div>
-        <div class="award-label">Government Selection · 정부 지원사업 선정</div>
-        <div class="award-title">공공기술기반 시장연계 창업탐색 지원사업 선정</div>
-        <div class="award-year">2026</div>
-      </div>
+        <p class="subtitle">첨단 재생치료제 생산을 위한 핵심 기반기술을 개발하는 예비창업팀입니다. 공공 기술을 시장과 연계하여 치료제 제조의 새로운 표준을 만들어갑니다.</p>
+      </section>
     </div>
-
-    <div class="info-grid">
-      <div class="info-cell">
-        <div class="info-cell-label">Company</div>
-        <div class="info-cell-value">Braxcell Systems Inc.</div>
-      </div>
-      <div class="info-cell">
-        <div class="info-cell-label">Stage</div>
-        <div class="info-cell-value">예비창업팀</div>
-      </div>
-      <div class="info-cell">
-        <div class="info-cell-label">Focus Area</div>
-        <div class="info-cell-value">첨단 재생치료제<br/>생산 기반기술 개발</div>
-      </div>
-      <div class="info-cell">
-        <div class="info-cell-label">Domain</div>
-        <div class="info-cell-value">Cell &amp; Gene Therapy<br/>Manufacturing Platform</div>
-      </div>
-    </div>
-
-    <footer>
-      <div class="footer-logo">Braxcell Systems</div>
-      <div class="footer-copy">© 2026 Braxcell Systems Inc.</div>
-    </footer>
-
   </div>
+
+  <div id="frame-top-footer">
+    <div class="wrap">
+      <a class="learn-more" href="https://braxcell.notion.site/" target="_blank" rel="noopener noreferrer">
+        Learn more
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="frame-divider"></div>
+
+  <!-- ══ BOTTOM FRAME ══ -->
+  <div id="frame-bottom">
+    <div class="wrap">
+
+      <div class="award">
+        <div class="award-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="award-label">Government Selection · 정부 지원사업 선정</div>
+          <div class="award-title">공공기술기반 시장연계 창업탐색 지원사업 선정</div>
+          <div class="award-year">2026</div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="info-cell-label">Company</div>
+          <div class="info-cell-value">Braxcell Systems Inc.</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-cell-label">Stage</div>
+          <div class="info-cell-value">예비창업팀</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-cell-label">Focus Area</div>
+          <div class="info-cell-value">첨단 재생치료제<br/>생산 기반기술 개발</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-cell-label">Domain</div>
+          <div class="info-cell-value">Cell &amp; Gene Therapy<br/>Manufacturing Platform</div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="footer-logo">Braxcell Systems</div>
+        <div class="footer-copy">© 2026 Braxcell Systems Inc.</div>
+      </footer>
+
+    </div>
+  </div>
+
+
+
 </body>
 </html>
