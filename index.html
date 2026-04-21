@@ -92,8 +92,8 @@
     .logo span { color: var(--accent); }
 
     .dot-bar { display: flex; gap: 6px; align-items: center; }
-    .dot-bar span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
-    .dot-bar span:first-child { background: var(--accent); }
+    .dot-bar span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); cursor: pointer; transition: background 0.3s; }
+    .dot-bar span.active { background: var(--accent); }
 
     .hero { padding: 28px 0 60px; }
 
@@ -120,29 +120,71 @@
       animation: pulse 2s infinite;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+    /* ── Carousel ── */
+    .carousel {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    .slide {
+      min-width: 100%;
+      flex-shrink: 0;
+    }
+
+    /* h1 row: title + dots side by side */
+    .slide-heading {
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
     }
 
     h1 {
       font-family: 'Bell MT', 'Baskerville', 'Georgia', serif;
       font-weight: normal;
-      font-size: clamp(3rem, 8vw, 5.5rem);
-      line-height: 1.0;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      line-height: 1.1;
       letter-spacing: -0.01em;
       animation: fadeUp 0.8s 0.1s ease both;
     }
     h1 em { font-style: normal; color: var(--accent); }
+
+    .slide-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding-bottom: 10px;
+      flex-shrink: 0;
+    }
+    .slide-dots span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .slide-dots span.active { background: var(--accent); }
 
     .subtitle {
       margin-top: 36px;
       font-size: 1rem;
       line-height: 1.85;
       color: var(--label);
-      max-width: 560px;
+      max-width: 620px;
       font-weight: 300;
-      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .subtitle-en {
+      margin-top: 36px;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: var(--label);
+      max-width: 620px;
+      font-weight: 300;
     }
 
     /* ── Learn more link ── */
@@ -308,17 +350,40 @@
     <div class="wrap">
       <header>
         <div class="logo">Brax<span>cell</span> Systems</div>
-        <div class="dot-bar">
-          <span></span><span></span><span></span>
-        </div>
       </header>
 
       <section class="hero">
         <div class="tag">Regenerative Medicine · Cell Technology</div>
 
-        <h1>Building the future of <em>cell therapy.</em></h1>
+        <div class="carousel">
+          <div class="carousel-track" id="carousel-track">
 
-        <p class="subtitle">첨단 재생치료제 생산을 위한 핵심 기반기술을 개발하는 예비창업팀입니다. 공공 기술을 시장과 연계하여 치료제 제조의 새로운 표준을 만들어갑니다.</p>
+            <!-- ── Slide 1 ── -->
+            <div class="slide">
+              <div class="slide-heading">
+                <h1>Building the future of <em>cell therapy.</em></h1>
+                <div class="slide-dots" id="dots">
+                  <span class="active" onclick="goTo(0)"></span>
+                  <span onclick="goTo(1)"></span>
+                </div>
+              </div>
+              <p class="subtitle">첨단 재생치료제 생산을 위한 핵심 기반기술을 개발하는 예비창업팀입니다. 공공 기술을 시장과 연계하여 치료제 제조의 새로운 표준을 만들어갑니다.</p>
+            </div>
+
+            <!-- ── Slide 2 ── -->
+            <div class="slide">
+              <div class="slide-heading">
+                <h1>Platform that controls biological flow to enable <em>scalable and functional cell production.</em></h1>
+                <div class="slide-dots">
+                  <span onclick="goTo(0)"></span>
+                  <span class="active" onclick="goTo(1)"></span>
+                </div>
+              </div>
+              <p class="subtitle-en">Biology is not static. Cells exist in constantly changing environments. BRAXCELL SYSTEMS was built on the idea that controlling biological flow — not just structure — is the key to scalable and functional cell systems.</p>
+            </div>
+
+          </div>
+        </div>
       </section>
     </div>
   </div>
@@ -382,5 +447,24 @@
 
 
 
+  <script>
+    let current = 0;
+    const track = document.getElementById('carousel-track');
+    const allDotGroups = document.querySelectorAll('.slide-dots');
+
+    function goTo(index) {
+      current = index;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      // sync all dot groups
+      allDotGroups.forEach(group => {
+        group.querySelectorAll('span').forEach((dot, i) => {
+          dot.classList.toggle('active', i === current);
+        });
+      });
+    }
+
+    // Auto-advance every 5 seconds
+    setInterval(() => goTo((current + 1) % 2), 5000);
+  </script>
 </body>
 </html>
