@@ -124,32 +124,48 @@
     .carousel {
       position: relative;
       overflow: hidden;
+      width: 100%;
     }
+
+    .slide-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .slide-dots span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .slide-dots span.active { background: var(--accent); }
 
     .carousel-track {
       display: flex;
-      transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+      transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+      align-items: flex-start;
     }
 
     .slide {
       min-width: 100%;
+      width: 100%;
       flex-shrink: 0;
-    }
-
-    /* h1 row: title + dots side by side */
-    .slide-heading {
-      display: flex;
-      align-items: flex-end;
-      gap: 20px;
+      box-sizing: border-box;
+      word-break: keep-all;
+      overflow-wrap: break-word;
     }
 
     h1 {
       font-family: 'Bell MT', 'Baskerville', 'Georgia', serif;
       font-weight: normal;
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      line-height: 1.1;
+      font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+      line-height: 1.2;
       letter-spacing: -0.01em;
-      animation: fadeUp 0.8s 0.1s ease both;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      white-space: normal;
     }
     h1 em { font-style: normal; color: var(--accent); }
 
@@ -356,29 +372,21 @@
         <div class="tag">Regenerative Medicine · Cell Technology</div>
 
         <div class="carousel">
+          <div class="slide-dots" id="dots">
+            <span class="active" onclick="goTo(0)"></span>
+            <span onclick="goTo(1)"></span>
+          </div>
           <div class="carousel-track" id="carousel-track">
 
             <!-- ── Slide 1 ── -->
             <div class="slide">
-              <div class="slide-heading">
-                <h1>Building the future of <em>cell therapy.</em></h1>
-                <div class="slide-dots" id="dots">
-                  <span class="active" onclick="goTo(0)"></span>
-                  <span onclick="goTo(1)"></span>
-                </div>
-              </div>
+              <h1>Building the future of <em>cell therapy.</em></h1>
               <p class="subtitle">첨단 재생치료제 생산을 위한 핵심 기반기술을 개발하는 예비창업팀입니다. 공공 기술을 시장과 연계하여 치료제 제조의 새로운 표준을 만들어갑니다.</p>
             </div>
 
             <!-- ── Slide 2 ── -->
             <div class="slide">
-              <div class="slide-heading">
-                <h1>Platform that controls biological flow to enable <em>scalable and functional cell production.</em></h1>
-                <div class="slide-dots">
-                  <span onclick="goTo(0)"></span>
-                  <span class="active" onclick="goTo(1)"></span>
-                </div>
-              </div>
+              <h1>Platform that controls biological flow to enable <em>scalable and functional cell production.</em></h1>
               <p class="subtitle-en">Biology is not static. Cells exist in constantly changing environments. BRAXCELL SYSTEMS was built on the idea that controlling biological flow — not just structure — is the key to scalable and functional cell systems.</p>
             </div>
 
@@ -450,21 +458,13 @@
   <script>
     let current = 0;
     const track = document.getElementById('carousel-track');
-    const allDotGroups = document.querySelectorAll('.slide-dots');
+    const dots = document.querySelectorAll('#dots span');
 
     function goTo(index) {
       current = index;
       track.style.transform = `translateX(-${current * 100}%)`;
-      // sync all dot groups
-      allDotGroups.forEach(group => {
-        group.querySelectorAll('span').forEach((dot, i) => {
-          dot.classList.toggle('active', i === current);
-        });
-      });
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
     }
-
-    // Auto-advance every 5 seconds
-    setInterval(() => goTo((current + 1) % 2), 5000);
   </script>
 </body>
 </html>
