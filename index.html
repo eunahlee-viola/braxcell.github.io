@@ -209,14 +209,10 @@
 
     /* animation schematic */
     .schematic {
-      margin-top: 48px;
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      padding: 40px;
+      margin-top: 48px; border: 1px solid var(--border);
+      background: var(--surface2); padding: 40px;
       display: flex; align-items: center; justify-content: center;
     }
-
-    /* ══════════ BENEFITS SECTION ══════════ */
     .benefits-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 1px; background: var(--border); border: 1px solid var(--border);
@@ -344,6 +340,44 @@
     }
     .footer-logo { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
     .footer-copy { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); }
+
+    /* ══════════ ANIMATION SECTION ══════════ */
+    .anim-section { margin-top: 48px; }
+    .anim-panels {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .anim-panel { background: var(--surface2); }
+    .anim-panel-highlight { background: rgba(0,200,160,0.04); border-left: 2px solid var(--accent); }
+    .anim-panel-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); }
+    .anim-badge {
+      display: inline-block; font-family: 'DM Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 2px; margin-bottom: 8px;
+    }
+    .anim-badge-old { background: rgba(255,107,107,0.12); color: var(--danger); }
+    .anim-badge-new { background: var(--accent-dim); color: var(--accent); }
+    .anim-panel-title { font-size: 0.85rem; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+    .anim-panel-sub { font-size: 0.72rem; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+    .anim-canvas-wrap { position: relative; height: 220px; overflow: hidden; background: var(--bg); }
+    .anim-canvas-wrap canvas { display: block; width: 100%; height: 100%; }
+    .anim-traits { padding: 12px 20px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+    .anim-trait { font-size: 0.78rem; line-height: 1.5; }
+    .anim-trait.bad  { color: var(--danger); opacity: 0.85; }
+    .anim-trait.ok   { color: var(--label); }
+    .anim-trait.good { color: var(--accent); }
+    .anim-speed-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 20px; background: var(--surface);
+      border: 1px solid var(--border); border-top: none; margin-top: 0;
+    }
+    .anim-speed-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--muted); white-space: nowrap; }
+    .anim-speed-val { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--accent); min-width: 16px; }
+
+    @media (max-width: 700px) {
+      .anim-panels { grid-template-columns: 1fr; }
+    }
 
     @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
     @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
@@ -479,38 +513,50 @@
       </div>
     </div>
 
-    <!-- Animated schematic -->
-    <div class="schematic">
-      <div class="schematic-inner">
-        <div class="organoid-wrap">
-          <svg class="organoid-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
-            <!-- outer flow ring -->
-            <circle cx="70" cy="70" r="60" fill="none" stroke="rgba(0,200,160,0.12)" stroke-width="1"/>
-            <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(0,200,160,0.08)" stroke-width="0.5" stroke-dasharray="4 6"/>
-            <!-- organoid body -->
-            <circle cx="70" cy="70" r="28" fill="rgba(0,200,160,0.06)" stroke="#00c8a0" stroke-width="1.5"/>
-            <!-- inner structure -->
-            <circle cx="70" cy="70" r="12" fill="rgba(0,200,160,0.12)" stroke="#00c8a0" stroke-width="1"/>
-            <circle cx="70" cy="70" r="4" fill="#00c8a0"/>
-            <!-- orbiting particles (fluid flow representation) -->
-            <g class="orbit-dot">
-              <circle cx="70" cy="70" r="3" fill="#00c8a0" opacity="0.8"/>
-            </g>
-            <g class="orbit-dot2">
-              <circle cx="70" cy="70" r="2" fill="#00c8a0" opacity="0.5"/>
-            </g>
-            <g class="orbit-dot3">
-              <circle cx="70" cy="70" r="2.5" fill="#00c8a0" opacity="0.6"/>
-            </g>
-            <!-- flow arrows (static, decorative) -->
-            <path d="M 70 10 Q 110 40 110 70" fill="none" stroke="rgba(0,200,160,0.25)" stroke-width="1" stroke-dasharray="3 5"/>
-            <path d="M 110 70 Q 110 100 70 130" fill="none" stroke="rgba(0,200,160,0.15)" stroke-width="1" stroke-dasharray="3 5"/>
-          </svg>
+    <!-- Canvas Animation -->
+    <div class="anim-section">
+      <div class="anim-panels">
+
+        <!-- LEFT: Dynamic -->
+        <div class="anim-panel">
+          <div class="anim-panel-header">
+            <span class="anim-badge anim-badge-old">기존 방식</span>
+            <p class="anim-panel-title">교반식 동적 부유 (Dynamic Suspension)</p>
+            <p class="anim-panel-sub">임펠러 / 휠 / 오비탈 교반</p>
+          </div>
+          <div class="anim-canvas-wrap">
+            <canvas id="cDynamic"></canvas>
+          </div>
+          <div class="anim-traits">
+            <div class="anim-trait bad">⚠ 높은 물리적 스트레스 → 세포 손상</div>
+            <div class="anim-trait bad">⚠ 형태 실시간 관찰 불가</div>
+            <div class="anim-trait ok">✓ 균일성 높음 · 대용량 확장 용이</div>
+          </div>
         </div>
-        <div class="schematic-text">
-          <h3>TEB (Turbulent Eddy Breaker) 기술</h3>
-          <p>유체 흐름을 정밀하게 제어하여 오가노이드를 교반 없이 부유 상태로 유지합니다. 물리적 충격 없이 세포 환경을 안정적으로 유지하면서, 동시에 배양 챔버 내 실시간 형태 관찰이 가능합니다.</p>
+
+        <!-- RIGHT: Static -->
+        <div class="anim-panel anim-panel-highlight">
+          <div class="anim-panel-header">
+            <span class="anim-badge anim-badge-new">NoStir Platform</span>
+            <p class="anim-panel-title">유체제어 정적 부유 (Static Suspension)</p>
+            <p class="anim-panel-sub">펌프 기반 유체 제어 · TEB 기술</p>
+          </div>
+          <div class="anim-canvas-wrap">
+            <canvas id="cStatic"></canvas>
+          </div>
+          <div class="anim-traits">
+            <div class="anim-trait good">✓ 물리적 스트레스 없음 → 고활성 유지</div>
+            <div class="anim-trait good">✓ 실시간 오가노이드 형태 관찰 가능</div>
+            <div class="anim-trait good">✓ 세포 친화적 환경 · 자동화 효율 높음</div>
+          </div>
         </div>
+
+      </div>
+
+      <div class="anim-speed-row">
+        <span class="anim-speed-label">애니메이션 속도</span>
+        <input type="range" id="speedSlider" min="1" max="5" value="3" step="1" style="flex:1; accent-color: var(--accent);">
+        <span class="anim-speed-val" id="speedVal">3</span>
       </div>
     </div>
   </div>
@@ -639,7 +685,160 @@
 </div>
 
 <script>
-  // Carousel
+  // ── ANIMATION ──────────────────────────────
+  (function() {
+    const slider = document.getElementById('speedSlider');
+    const speedOut = document.getElementById('speedVal');
+    let speedMult = 1;
+    if (slider) {
+      slider.addEventListener('input', () => {
+        speedMult = parseFloat(slider.value) / 3;
+        speedOut.textContent = slider.value;
+      });
+    }
+
+    function setupCanvas(id) {
+      const canvas = document.getElementById(id);
+      if (!canvas) return null;
+      const wrap = canvas.parentElement;
+      const W = wrap.offsetWidth || 340;
+      const H = 220;
+      canvas.width = W; canvas.height = H;
+      return { canvas, ctx: canvas.getContext('2d'), W, H };
+    }
+
+    /* DYNAMIC */
+    const dyn = setupCanvas('cDynamic');
+    if (!dyn) return;
+    const W1=dyn.W, H1=dyn.H, ctx1=dyn.ctx;
+    const vX1=W1*0.10, vY1=14, vW1=W1*0.80, vH1=H1-20;
+    const orgs1 = Array.from({length:9},()=>({
+      x: vX1+30+Math.random()*(vW1-60),
+      y: vY1+30+Math.random()*(vH1-60),
+      r: 11+Math.random()*7,
+      vx:(Math.random()-0.5)*2.2,
+      vy:(Math.random()-0.5)*2.2,
+      deform:0, deformDir:Math.random()*Math.PI*2,
+    }));
+    let impAngle=0, t1=0;
+
+    function drawDynamic() {
+      ctx1.clearRect(0,0,W1,H1);
+      t1+=0.04*speedMult; impAngle+=0.06*speedMult;
+      ctx1.fillStyle='rgba(40,15,5,0.6)';
+      rrect(ctx1,vX1,vY1,vW1,vH1,10); ctx1.fill();
+      ctx1.strokeStyle='#b0826a'; ctx1.lineWidth=2;
+      rrect(ctx1,vX1,vY1,vW1,vH1,10); ctx1.stroke();
+      const cx=vX1+vW1/2, cy=vY1+vH1-28;
+      drawImpeller(ctx1,cx,cy,30,impAngle);
+      ctx1.strokeStyle='rgba(200,120,80,0.10)'; ctx1.lineWidth=1;
+      for(let r=22;r<vW1*0.48;r+=24){ctx1.beginPath();ctx1.arc(cx,vY1+vH1/2,r,0,Math.PI*2);ctx1.stroke();}
+      orgs1.forEach(o=>{
+        o.vx+=(Math.random()-0.5)*0.22*speedMult;
+        o.vy+=(Math.random()-0.5)*0.22*speedMult;
+        const sp=Math.sqrt(o.vx*o.vx+o.vy*o.vy), mx=3.2*speedMult;
+        if(sp>mx){o.vx*=mx/sp;o.vy*=mx/sp;}
+        const px=cx-o.x, py=(vY1+vH1/2)-o.y, d=Math.sqrt(px*px+py*py)||1;
+        o.vx+=(py/d)*0.07*speedMult; o.vy+=(-px/d)*0.07*speedMult;
+        o.x+=o.vx; o.y+=o.vy;
+        o.deform=Math.min(sp*0.18,0.38);
+        if(o.x-o.r<vX1+4){o.x=vX1+4+o.r;o.vx=Math.abs(o.vx);}
+        if(o.x+o.r>vX1+vW1-4){o.x=vX1+vW1-4-o.r;o.vx=-Math.abs(o.vx);}
+        if(o.y-o.r<vY1+4){o.y=vY1+4+o.r;o.vy=Math.abs(o.vy);}
+        if(o.y+o.r>vY1+vH1-8){o.y=vY1+vH1-8-o.r;o.vy=-Math.abs(o.vy);}
+        drawOrganoid(ctx1,o.x,o.y,o.r,o.deform,o.deformDir,true);
+        o.deformDir+=0.04*speedMult;
+      });
+      requestAnimationFrame(drawDynamic);
+    }
+
+    /* STATIC */
+    const sta = setupCanvas('cStatic');
+    if (!sta) return;
+    const W2=sta.W, H2=sta.H, ctx2=sta.ctx;
+    const vX2=W2*0.10, vY2=14, vW2=W2*0.80, vH2=H2-20;
+    const orgs2 = Array.from({length:6},(_,i)=>{
+      const col=i%3, row=Math.floor(i/3);
+      return { x:vX2+vW2*(0.18+col*0.32), y:vY2+vH2*(0.30+row*0.38), r:13+Math.random()*5, phase:Math.random()*Math.PI*2 };
+    });
+    orgs2.forEach(o=>{o.bx=o.x;o.by=o.y;});
+    let t2=0, flo=0;
+
+    function drawStatic() {
+      ctx2.clearRect(0,0,W2,H2);
+      t2+=0.025*speedMult; flo=(flo+1.3*speedMult)%40;
+      ctx2.fillStyle='rgba(0,25,20,0.65)';
+      rrect(ctx2,vX2,vY2,vW2,vH2,10); ctx2.fill();
+      ctx2.strokeStyle='#5aada0'; ctx2.lineWidth=2;
+      rrect(ctx2,vX2,vY2,vW2,vH2,10); ctx2.stroke();
+      const nc=6, cw=vW2/nc;
+      for(let c=0;c<nc;c++){
+        const x=vX2+c*cw+cw/2;
+        for(let ys=vY2+vH2-flo;ys>vY2;ys-=40){
+          ctx2.strokeStyle='rgba(0,200,160,0.55)'; ctx2.lineWidth=1.5;
+          ctx2.beginPath();ctx2.moveTo(x,ys);ctx2.lineTo(x,ys-18);ctx2.stroke();
+          ctx2.beginPath();ctx2.moveTo(x-4,ys-12);ctx2.lineTo(x,ys-18);ctx2.lineTo(x+4,ys-12);ctx2.stroke();
+        }
+      }
+      orgs2.forEach(o=>{
+        o.x=o.bx+Math.sin(t2*0.7+o.phase)*2;
+        o.y=o.by+Math.sin(t2+o.phase)*3.2;
+        drawOrganoid(ctx2,o.x,o.y,o.r,0.02,0,false);
+      });
+      requestAnimationFrame(drawStatic);
+    }
+
+    /* HELPERS */
+    function rrect(ctx,x,y,w,h,r){
+      ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+      ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);
+      ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);
+      ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);
+      ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
+    }
+
+    function drawOrganoid(ctx,x,y,r,deform,dir,stressed){
+      ctx.save(); ctx.translate(x,y); ctx.rotate(dir);
+      const rx=r*(1+deform), ry=r*(1-deform*0.5);
+      ctx.beginPath(); ctx.ellipse(0,0,rx,ry,0,0,Math.PI*2);
+      const g=ctx.createRadialGradient(-rx*0.25,-ry*0.25,rx*0.05,0,0,rx);
+      g.addColorStop(0,'#fcd5a0'); g.addColorStop(0.6,'#f59e60'); g.addColorStop(1,'#c97a30');
+      ctx.fillStyle=g; ctx.fill();
+      ctx.strokeStyle='#c97a30'; ctx.lineWidth=1.2; ctx.stroke();
+      for(let i=0;i<5;i++){
+        const a=(i/5)*Math.PI*2;
+        ctx.beginPath();ctx.arc(Math.cos(a)*rx*0.38,Math.sin(a)*ry*0.38,rx*0.22,0,Math.PI*2);
+        ctx.strokeStyle='rgba(180,100,30,0.3)';ctx.lineWidth=0.8;ctx.stroke();
+      }
+      ctx.beginPath();ctx.arc(0,0,rx*0.2,0,Math.PI*2);
+      ctx.fillStyle='rgba(150,80,20,0.45)';ctx.fill();
+      if(stressed&&deform>0.1){
+        ctx.strokeStyle='rgba(220,60,60,0.6)';ctx.lineWidth=1.5;
+        for(let s=0;s<3;s++){
+          const sa=(s/3)*Math.PI*2+dir;
+          ctx.beginPath();ctx.moveTo(Math.cos(sa)*(rx+4),Math.sin(sa)*(ry+4));
+          ctx.lineTo(Math.cos(sa)*(rx+11),Math.sin(sa)*(ry+11));ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+
+    function drawImpeller(ctx,cx,cy,r,angle){
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
+      ctx.strokeStyle='#777'; ctx.lineWidth=3; ctx.lineCap='round';
+      for(let i=0;i<4;i++){
+        const a=(i/4)*Math.PI*2;
+        ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);ctx.stroke();
+        ctx.beginPath();ctx.ellipse(Math.cos(a)*r,Math.sin(a)*r,8,4,a,0,Math.PI*2);
+        ctx.fillStyle='#999';ctx.fill();ctx.stroke();
+      }
+      ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fillStyle='#555';ctx.fill();
+      ctx.restore();
+    }
+
+    drawDynamic();
+    drawStatic();
+  })();
   let current = 0;
   const track = document.getElementById('carousel-track');
   const dots  = document.querySelectorAll('#dots span');
