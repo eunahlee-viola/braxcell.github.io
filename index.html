@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Braxcell Systems — NoStir Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@300;400&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080c0f;
+      --surface: #0d1318;
+      --surface2: #111820;
+      --border: rgba(255,255,255,0.07);
+      --accent: #00c8a0;
+      --accent-dim: rgba(0,200,160,0.10);
+      --accent-glow: rgba(0,200,160,0.06);
+      --text: #e8edf2;
+      --muted: #5a6a76;
+      --label: #8fa3b0;
+      --danger: #ff6b6b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans KR', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.015) 39px, rgba(255,255,255,0.015) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.015) 39px, rgba(255,255,255,0.015) 40px);
+      pointer-events: none; z-index: 0;
+    }
+
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 960px; margin: 0 auto; padding: 0 32px;
+    }
+
+    /* ══════════ HEADER ══════════ */
+    #frame-top { position: relative; z-index: 1; background: var(--bg); padding-bottom: 60px; }
+    #frame-top::after {
+      content: '';
+      position: absolute; top: -20vh; left: 50%; transform: translateX(-50%);
+      width: 900px; height: 600px;
+      background: radial-gradient(ellipse at center, rgba(0,200,160,0.07) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    header {
+      padding: 48px 0 0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .logo {
+      font-family: 'Franklin Gothic Demi', 'Franklin Gothic Medium', Arial, sans-serif;
+      font-weight: 700; font-size: 1.1rem; letter-spacing: 0.12em;
+      color: var(--text); text-transform: uppercase;
+    }
+    .logo span { color: var(--accent); }
+
+    /* ══════════ LANG SWITCH ══════════ */
+    .lang-switch {
+      display: flex; align-items: center; gap: 2px;
+      font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em;
+    }
+    .lang-btn {
+      color: var(--muted); text-decoration: none;
+      padding: 4px 8px; transition: color 0.2s; border-radius: 2px;
+    }
+    .lang-btn:hover { color: var(--text); }
+    .lang-btn.active { color: var(--accent); border-bottom: 1px solid var(--accent); }
+    .lang-sep { color: var(--border); padding: 0 2px; }
+
+
+    .hero { padding: 28px 0 60px; }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid rgba(0,200,160,0.3);
+      padding: 6px 14px; border-radius: 2px; margin-bottom: 48px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .tag::before {
+      content: ''; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent); animation: pulse 2s infinite;
+    }
+
+    /* carousel */
+    .carousel { position: relative; overflow: hidden; width: 100%; }
+    .slide-dots { display: flex; gap: 6px; align-items: center; margin-bottom: 16px; }
+    .slide-dots span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--muted); cursor: pointer; transition: background 0.3s;
+    }
+    .slide-dots span.active { background: var(--accent); }
+    .carousel-track { display: flex; transition: transform 0.5s cubic-bezier(0.77,0,0.175,1); align-items: flex-start; }
+    .slide { min-width: 100%; width: 100%; flex-shrink: 0; box-sizing: border-box; word-break: keep-all; overflow-wrap: break-word; }
+
+    h1 {
+      font-family: 'Bell MT', 'Baskerville', 'Georgia', serif;
+      font-weight: normal; font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+      line-height: 1.2; word-break: keep-all; overflow-wrap: break-word;
+    }
+    h1 em { font-style: normal; color: var(--accent); }
+
+    .subtitle { margin-top: 28px; font-size: 1rem; line-height: 1.85; color: var(--label); max-width: 640px; font-weight: 300; }
+    .subtitle-en { margin-top: 28px; font-size: 0.95rem; line-height: 1.9; color: var(--label); max-width: 640px; font-weight: 300; }
+
+    #frame-top-footer { position: relative; z-index: 1; background: var(--bg); padding-bottom: 40px; }
+    .learn-more {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'DM Mono', monospace; font-size: 0.78rem;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent);
+      text-decoration: none; border-bottom: 1px solid rgba(0,200,160,0.3);
+      padding-bottom: 2px; transition: border-color 0.2s, opacity 0.2s;
+    }
+    .learn-more:hover { border-color: var(--accent); opacity: 0.8; }
+    .learn-more svg { width: 14px; height: 14px; }
+
+    .frame-divider { width: 100%; height: 1px; background: var(--border); position: relative; z-index: 1; }
+
+    /* ══════════ SHARED SECTION STYLES ══════════ */
+    .section {
+      position: relative; z-index: 1; background: var(--bg);
+      padding: 80px 0;
+    }
+    .section-alt { background: var(--surface); }
+
+    .section-label {
+      font-family: 'DM Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 20px;
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1.25;
+      color: var(--text); word-break: keep-all;
+    }
+    h2 em { font-style: normal; color: var(--accent); }
+
+    /* ══════════ PROBLEM SECTION ══════════ */
+    .problem-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-top: 48px;
+    }
+
+    .problem-card {
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--danger);
+      background: var(--surface2);
+      padding: 28px 28px 32px;
+    }
+
+    .problem-card .num {
+      font-family: 'DM Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.2em; color: var(--danger); margin-bottom: 14px;
+    }
+
+    .problem-card h3 {
+      font-size: 0.95rem; font-weight: 500; color: var(--text);
+      line-height: 1.6; margin-bottom: 12px;
+    }
+
+    .problem-card p {
+      font-size: 0.82rem; color: var(--label); line-height: 1.75; font-weight: 300;
+    }
+
+    /* ══════════ TECHNOLOGY SECTION ══════════ */
+    .vs-container {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      gap: 24px; align-items: center; margin-top: 48px;
+    }
+
+    .vs-card {
+      border: 1px solid var(--border);
+      background: var(--surface2); padding: 32px;
+    }
+    .vs-card.highlight {
+      border-color: rgba(0,200,160,0.35);
+      background: var(--accent-dim);
+    }
+
+    .vs-badge {
+      font-family: 'DM Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 2px; margin-bottom: 18px;
+      display: inline-block;
+    }
+    .vs-badge.old { background: rgba(255,107,107,0.12); color: var(--danger); }
+    .vs-badge.new { background: rgba(0,200,160,0.12); color: var(--accent); }
+
+    .vs-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+
+    .vs-card ul { list-style: none; }
+    .vs-card ul li {
+      font-size: 0.82rem; color: var(--label); line-height: 1.7;
+      padding: 5px 0; border-bottom: 1px solid var(--border);
+      font-weight: 300;
+    }
+    .vs-card ul li:last-child { border-bottom: none; }
+    .vs-card ul li::before { content: '— '; color: var(--muted); }
+    .vs-card.highlight ul li { color: var(--text); }
+    .vs-card.highlight ul li::before { content: '✓  '; color: var(--accent); }
+
+    .vs-divider {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.2rem; color: var(--muted); text-align: center;
+    }
+
+    /* animation schematic */
+    .schematic {
+      margin-top: 48px; border: 1px solid var(--border);
+      background: var(--surface2); padding: 40px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .benefits-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border); border: 1px solid var(--border);
+      margin-top: 48px;
+    }
+
+    .benefit-cell {
+      background: var(--surface); padding: 36px 28px;
+    }
+
+    .benefit-icon {
+      width: 44px; height: 44px;
+      background: var(--accent-dim); border: 1px solid rgba(0,200,160,0.2);
+      border-radius: 3px; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .benefit-icon svg { width: 20px; height: 20px; stroke: var(--accent); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .benefit-cell h3 { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+    .benefit-cell p { font-size: 0.8rem; color: var(--label); line-height: 1.75; font-weight: 300; }
+
+    /* ══════════ SURVEY SECTION ══════════ */
+    #section-survey { background: var(--surface); }
+
+    .survey-intro {
+      margin-top: 16px; font-size: 0.88rem; color: var(--label);
+      line-height: 1.8; max-width: 640px; font-weight: 300;
+    }
+
+    .survey-cards {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px; margin-top: 40px;
+    }
+
+    .survey-card {
+      border: 1px solid var(--border); background: var(--surface2);
+      padding: 32px;
+    }
+
+    .survey-card .q-num {
+      font-family: 'DM Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 0.2em; color: var(--accent); margin-bottom: 14px;
+    }
+
+    .survey-card .q-text {
+      font-size: 0.9rem; font-weight: 500; color: var(--text);
+      line-height: 1.7; margin-bottom: 24px;
+    }
+
+    .survey-card .q-sub {
+      font-size: 0.78rem; color: var(--label); line-height: 1.7;
+      font-weight: 300; margin-bottom: 24px;
+    }
+
+    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn-ans {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.1em; padding: 10px 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--label); cursor: pointer;
+      transition: all 0.2s; border-radius: 2px;
+    }
+    .btn-ans:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-ans.selected { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+    .btn-ans.selected-no { background: rgba(255,107,107,0.08); border-color: var(--danger); color: var(--danger); }
+
+    .survey-result {
+      margin-top: 16px; font-size: 0.78rem; color: var(--label);
+      min-height: 20px; line-height: 1.7; font-weight: 300;
+      font-style: italic;
+    }
+    .survey-result.show { color: var(--accent); }
+
+    .contact-block {
+      margin-top: 48px; border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      background: var(--surface2); padding: 32px 36px;
+    }
+
+    .contact-block p {
+      font-size: 0.88rem; color: var(--label); line-height: 1.8; font-weight: 300;
+    }
+
+    .contact-block a {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 20px; font-family: 'DM Mono', monospace;
+      font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); text-decoration: none;
+      border-bottom: 1px solid rgba(0,200,160,0.3); padding-bottom: 2px;
+      transition: border-color 0.2s;
+    }
+    .contact-block a:hover { border-color: var(--accent); }
+
+    /* ══════════ BOTTOM CREDENTIAL ══════════ */
+    #frame-bottom { position: relative; z-index: 1; background: var(--bg); padding-top: 64px; }
+
+    .award {
+      border: 1px solid var(--border); border-left: 3px solid var(--accent);
+      background: var(--surface); padding: 36px 40px;
+      display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center;
+    }
+    .award-icon {
+      width: 52px; height: 52px; background: var(--accent-dim);
+      border: 1px solid rgba(0,200,160,0.25); border-radius: 4px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .award-icon svg { width: 24px; height: 24px; stroke: var(--accent); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .award-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .award-title { font-size: 0.95rem; font-weight: 500; color: var(--text); line-height: 1.7; }
+    .award-year { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--accent); margin-top: 8px; }
+
+    .info-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 24px;
+    }
+    .info-cell { background: var(--surface); padding: 28px 32px; }
+    .info-cell-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .info-cell-value { font-size: 0.9rem; font-weight: 400; color: var(--text); line-height: 1.6; }
+
+    footer {
+      margin-top: 80px; padding: 40px 0;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .footer-copy { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); }
+
+    /* ══════════ VIDEO SECTION ══════════ */
+    .video-section { margin-top: 32px; }
+    .video-label { margin-bottom: 14px; }
+    .video-wrap {
+      border: 1px solid var(--border);
+      background: #000;
+      line-height: 0;
+    }
+    .video-wrap video {
+      width: 100%;
+      max-height: 520px;
+      display: block;
+    }
+
+    /* ══════════ ANIMATION SECTION ══════════ */
+    .anim-section { margin-top: 48px; }
+    .anim-panels {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .anim-panel { background: var(--surface2); }
+    .anim-panel-highlight { background: rgba(0,200,160,0.04); border-left: 2px solid var(--accent); }
+    .anim-panel-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); }
+    .anim-badge {
+      display: inline-block; font-family: 'DM Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 2px; margin-bottom: 8px;
+    }
+    .anim-badge-old { background: rgba(255,107,107,0.12); color: var(--danger); }
+    .anim-badge-new { background: var(--accent-dim); color: var(--accent); }
+    .anim-panel-title { font-size: 0.85rem; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+    .anim-panel-sub { font-size: 0.72rem; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+    .anim-canvas-wrap { position: relative; height: 220px; overflow: hidden; background: var(--bg); }
+    .anim-canvas-wrap canvas { display: block; width: 100%; height: 100%; }
+    .anim-traits { padding: 12px 20px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+    .anim-trait { font-size: 0.78rem; line-height: 1.5; }
+    .anim-trait.bad  { color: var(--danger); opacity: 0.85; }
+    .anim-trait.ok   { color: var(--label); }
+    .anim-trait.good { color: var(--accent); }
+    .anim-speed-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 20px; background: var(--surface);
+      border: 1px solid var(--border); border-top: none; margin-top: 0;
+    }
+    .anim-speed-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--muted); white-space: nowrap; }
+    .anim-speed-val { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--accent); min-width: 16px; }
+
+    @media (max-width: 700px) {
+      .anim-panels { grid-template-columns: 1fr; }
+    }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+    /* orbit animation */
+    @keyframes orbit { from { transform: rotate(0deg) translateX(38px) rotate(0deg); } to { transform: rotate(360deg) translateX(38px) rotate(-360deg); } }
+    @keyframes orbitR { from { transform: rotate(0deg) translateX(52px) rotate(0deg); } to { transform: rotate(-360deg) translateX(52px) rotate(360deg); } }
+    @keyframes driftY { 0%,100% { cy: 72; } 50% { cy: 70; } }
+
+    .organoid-wrap { position: relative; width: 140px; height: 140px; flex-shrink: 0; }
+    .organoid-svg { width: 140px; height: 140px; }
+    .orbit-dot { animation: orbit 4s linear infinite; transform-origin: 70px 70px; }
+    .orbit-dot2 { animation: orbit 6s linear infinite reverse; transform-origin: 70px 70px; }
+    .orbit-dot3 { animation: orbitR 5s linear infinite; transform-origin: 70px 70px; }
+
+    .flow-label {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.12em; color: var(--label);
+    }
+
+    .schematic-inner {
+      display: flex; align-items: center; gap: 48px;
+      flex-wrap: wrap; justify-content: center;
+    }
+
+    .schematic-text h3 { font-size: 0.95rem; font-weight: 600; color: var(--accent); margin-bottom: 10px; }
+    .schematic-text p { font-size: 0.8rem; color: var(--label); line-height: 1.75; font-weight: 300; max-width: 280px; }
+
+    @media (max-width: 700px) {
+      .wrap { padding: 0 20px; }
+      header { padding-top: 32px; }
+      h1 { font-size: 1.6rem; }
+      .hero { padding: 48px 0 48px; }
+      .problem-grid, .vs-container, .survey-cards, .benefits-grid { grid-template-columns: 1fr; }
+      .vs-divider { display: none; }
+      .award { grid-template-columns: 1fr; gap: 20px; padding: 28px 24px; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<div id="frame-top">
+  <div class="wrap">
+    <header>
+      <div class="logo">Brax<span>cell</span> Systems</div>
+      <div class="lang-switch">
+        <a href="index.html" class="lang-btn active">EN</a>
+        <span class="lang-sep">|</span>
+        <a href="index-ko.html" class="lang-btn">KO</a>
+      </div>
+    </header>
+    <section class="hero">
+      <div class="tag">Organoid Culture Platform · NoStir Technology</div>
+      <div class="carousel">
+        <div class="slide-dots" id="dots">
+          <span class="active" onclick="goTo(0)"></span>
+          <span onclick="goTo(1)"></span>
+        </div>
+        <div class="carousel-track" id="carousel-track">
+          <div class="slide">
+            <h1>Building the Future of <em>Organoid Therapy.</em></h1>
+            <p class="subtitle">A pre-startup team developing core platform technologies for advanced regenerative therapeutics. Bridging public research with the market, we aim to set a new standard in cell therapy manufacturing.</p>
+          </div>
+          <div class="slide">
+            <h1>Platform that controls biological flow to enable <em>scalable and functional cell production.</em></h1>
+            <p class="subtitle-en">Biology is not static. Cells exist in constantly changing environments. BRAXCELL SYSTEMS was built on the idea that controlling biological flow — not just structure — is the key to scalable and functional cell systems.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="frame-top-footer">
+  <div class="wrap">
+    <a class="learn-more" href="https://braxcell.notion.site/" target="_blank" rel="noopener noreferrer">
+      Learn more
+      <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</div>
+
+<div class="frame-divider"></div>
+
+<!-- ══ PROBLEM ══ -->
+<div class="section">
+  <div class="wrap">
+    <div class="section-label">Problem · Field Pain Points</div>
+    <h2>Is your current organoid culture<br/>approach <em>truly sufficient?</em></h2>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="num">PAIN 01 · PRODUCTIVITY</div>
+        <h3>Batch-to-Batch Organoid Quality Variation</h3>
+        <p>Physical stress from stirrer-based culture damages organoids, causing variable viability and yield across batches.</p>
+      </div>
+      <div class="problem-card">
+        <div class="num">PAIN 02 · WORK EFFICIENCY</div>
+        <h3>Frequent Weekend Work Just to Monitor Cultures</h3>
+        <p>In conventional impeller/shaking-based culture, real-time morphological observation is not possible and media exchange automation is difficult.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="frame-divider"></div>
+
+<!-- ══ TECHNOLOGY ══ -->
+<div class="section section-alt">
+  <div class="wrap">
+    <div class="section-label">Technology · NoStir Platform</div>
+    <h2>Fluid-Controlled <em>Static Suspension Culture</em></h2>
+
+    <div class="vs-container">
+      <div class="vs-card">
+        <div class="vs-badge old">Conventional Method</div>
+        <h3>Dynamic Suspension<br/>Stirrer-based</h3>
+        <ul>
+          <li>Continuous physical stress from stirring</li>
+          <li>Batch-to-batch quality variation</li>
+          <li>No real-time organoid morphology observation</li>
+        </ul>
+      </div>
+      <div class="vs-divider">VS</div>
+      <div class="vs-card highlight">
+        <div class="vs-badge new">NoStir Platform</div>
+        <h3>Static Suspension<br/>Fluid-controlled</h3>
+        <ul>
+          <li>High viability without physical stress</li>
+          <li>Stable, predictable culture quality</li>
+          <li>Real-time organoid morphology observation</li>
+          <li>Improved efficiency via remote monitoring</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Canvas Animation -->
+    <div class="anim-section">
+      <div class="anim-panels">
+
+        <!-- LEFT: Dynamic -->
+        <div class="anim-panel">
+          <div class="anim-panel-header">
+            <span class="anim-badge anim-badge-old">Conventional</span>
+            <p class="anim-panel-title">Dynamic Suspension</p>
+            <p class="anim-panel-sub">Impeller / Wheel / Orbital Stirring</p>
+          </div>
+          <div class="anim-canvas-wrap">
+            <canvas id="cDynamic"></canvas>
+          </div>
+          <div class="anim-traits">
+            <div class="anim-trait bad">⚠ High physical stress → cell damage</div>
+            <div class="anim-trait bad">⚠ No real-time morphology observation</div>
+            <div class="anim-trait ok">✓ High uniformity · scalable to large volume</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Static -->
+        <div class="anim-panel anim-panel-highlight">
+          <div class="anim-panel-header">
+            <span class="anim-badge anim-badge-new">NoStir Platform</span>
+            <p class="anim-panel-title">Static Suspension (Fluid-controlled)</p>
+            <p class="anim-panel-sub">Pump-based fluid control · TEB technology</p>
+          </div>
+          <div class="anim-canvas-wrap">
+            <canvas id="cStatic"></canvas>
+          </div>
+          <div class="anim-traits">
+            <div class="anim-trait good">✓ No physical stress → high viability</div>
+            <div class="anim-trait good">✓ Real-time organoid morphology observation</div>
+            <div class="anim-trait good">✓ Cell-friendly environment · high automation efficiency</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="anim-speed-row">
+        <span class="anim-speed-label">Animation Speed</span>
+        <input type="range" id="speedSlider" min="1" max="5" value="3" step="1" style="flex:1; accent-color: var(--accent);">
+        <span class="anim-speed-val" id="speedVal">3</span>
+      </div>
+    </div>
+
+    <!-- Video embed -->
+    <div class="video-section">
+      <div class="video-label">
+        <span class="section-label" style="margin-bottom:0;">Demonstration Video</span>
+      </div>
+      <div class="video-wrap">
+        <video controls playsinline preload="metadata">
+          <source src="clipped_20260609.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="frame-divider"></div>
+
+<!-- ══ BENEFITS ══ -->
+<div class="section">
+  <div class="wrap">
+    <div class="section-label">Benefits · Key Values</div>
+    <h2><em>3 Core Values</em> for Researchers</h2>
+    <div class="benefits-grid">
+      <div class="benefit-cell">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>High Viability Maintenance</h3>
+        <p>Organoids cultured in a static suspension environment maintain high viability and functionality without physical stress.</p>
+      </div>
+      <div class="benefit-cell">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>
+        </div>
+        <h3>Real-time Morphology Observation</h3>
+        <p>Organoids can be observed in real-time inside the chamber, reducing monitoring burden and the need for weekend check-ins.</p>
+      </div>
+      <div class="benefit-cell">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h3>Predictable Culture Quality</h3>
+        <p>Disposable culture chambers and standardized fluid control minimize batch variation and ensure consistent organoid quality.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="frame-divider"></div>
+
+<!-- ══ SURVEY ══ -->
+<div class="section section-alt" id="section-survey">
+  <div class="wrap">
+    <div class="section-label">Research Survey · Share Your Experience</div>
+    <h2>Tell us about <em>your field experience</em></h2>
+    <p class="survey-intro">Please share your experience with the questions below. Your insights from the field help us understand real challenges and develop better solutions for the organoid culture community.</p>
+
+    <div class="survey-cards">
+      <!-- Q1 -->
+      <div class="survey-card">
+        <div class="q-num">QUESTION 01 · Pain Point</div>
+        <p class="q-text">Is it difficult to observe organoid morphology in real-time or automate media exchange in your current culture workflow?</p>
+        <p class="q-sub">This question concerns the lack of real-time observation and automation challenges in conventional stirrer-based 3D culture systems.</p>
+        <div class="btn-group">
+          <button class="btn-ans" onclick="answer(1,'yes')">Yes, frequently</button>
+          <button class="btn-ans" onclick="answer(1,'sometimes')">Occasionally</button>
+          <button class="btn-ans" onclick="answer(1,'no')">Not applicable</button>
+        </div>
+        <div class="survey-result" id="result-1"></div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="survey-card">
+        <div class="q-num">QUESTION 02 · Quality Issue</div>
+        <p class="q-text">Have you experienced batch-to-batch quality variation in your organoid cultures that affected your research or production?</p>
+        <p class="q-sub">This question is about yield inconsistency, low viability, or reduced functionality causing delays in experiments or production.</p>
+        <div class="btn-group">
+          <button class="btn-ans" onclick="answer(2,'yes')">Yes, it's a challenge</button>
+          <button class="btn-ans" onclick="answer(2,'sometimes')">Sometimes</button>
+          <button class="btn-ans" onclick="answer(2,'no')">Not applicable</button>
+        </div>
+        <div class="survey-result" id="result-2"></div>
+      </div>
+    </div>
+
+    <div class="contact-block">
+      <p>Interested in participating in user testing or requesting a sample of the NoStir Platform?<br/>Join us as an early research partner — your field experience will directly shape our technology development.</p>
+      <a href="https://braxcell.notion.site/" target="_blank" rel="noopener noreferrer">
+        Learn More / Contact Us
+        <svg viewBox="0 0 16 16" fill="none" width="12" height="12"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="frame-divider"></div>
+
+<!-- ══ BOTTOM CREDENTIAL ══ -->
+<div id="frame-bottom">
+  <div class="wrap">
+    <div class="award">
+      <div class="award-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div>
+        <div class="award-label">Government Selection · 2026 Public Technology Commercialization Program</div>
+        <div class="award-title">Selected for Market-Linked Startup Exploration Support Program<br/><span style="font-size:0.82rem;color:var(--muted);">공공기술기반 시장연계 창업탐색 지원사업</span></div>
+        <div class="award-year">2026</div>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-cell">
+        <div class="info-cell-label">Company</div>
+        <div class="info-cell-value">Braxcell Systems Inc.</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-cell-label">Stage</div>
+        <div class="info-cell-value">Pre-startup Team</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-cell-label">Core Technology</div>
+        <div class="info-cell-value">TEB (Turbulent Eddy Breaker)<br/>NoStir Platform</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-cell-label">Target</div>
+        <div class="info-cell-value">Organoid Therapeutics<br/>R&amp;D / Manufacturers (B2B)</div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-logo">Braxcell Systems</div>
+      <div class="footer-copy">© 2026 Braxcell Systems Inc.</div>
+    </footer>
+  </div>
+</div>
+
+<script>
+  // ── ANIMATION ──────────────────────────────
+  (function() {
+    const slider = document.getElementById('speedSlider');
+    const speedOut = document.getElementById('speedVal');
+    let speedMult = 1;
+    if (slider) {
+      slider.addEventListener('input', () => {
+        speedMult = parseFloat(slider.value) / 3;
+        speedOut.textContent = slider.value;
+      });
+    }
+
+    function setupCanvas(id) {
+      const canvas = document.getElementById(id);
+      if (!canvas) return null;
+      const wrap = canvas.parentElement;
+      const W = wrap.offsetWidth || 340;
+      const H = 220;
+      canvas.width = W; canvas.height = H;
+      return { canvas, ctx: canvas.getContext('2d'), W, H };
+    }
+
+    /* DYNAMIC */
+    const dyn = setupCanvas('cDynamic');
+    if (!dyn) return;
+    const W1=dyn.W, H1=dyn.H, ctx1=dyn.ctx;
+    const vX1=W1*0.10, vY1=14, vW1=W1*0.80, vH1=H1-20;
+    const orgs1 = Array.from({length:9},()=>({
+      x: vX1+30+Math.random()*(vW1-60),
+      y: vY1+30+Math.random()*(vH1-60),
+      r: 11+Math.random()*7,
+      vx:(Math.random()-0.5)*2.2,
+      vy:(Math.random()-0.5)*2.2,
+      deform:0, deformDir:Math.random()*Math.PI*2,
+    }));
+    let impAngle=0, t1=0;
+
+    function drawDynamic() {
+      ctx1.clearRect(0,0,W1,H1);
+      t1+=0.04*speedMult; impAngle+=0.06*speedMult;
+      ctx1.fillStyle='rgba(40,15,5,0.6)';
+      rrect(ctx1,vX1,vY1,vW1,vH1,10); ctx1.fill();
+      ctx1.strokeStyle='#b0826a'; ctx1.lineWidth=2;
+      rrect(ctx1,vX1,vY1,vW1,vH1,10); ctx1.stroke();
+      const cx=vX1+vW1/2, cy=vY1+vH1/2;
+      drawImpeller(ctx1,cx,cy,30,impAngle);
+      ctx1.strokeStyle='rgba(200,120,80,0.10)'; ctx1.lineWidth=1;
+      for(let r=22;r<vW1*0.48;r+=24){ctx1.beginPath();ctx1.arc(cx,cy,r,0,Math.PI*2);ctx1.stroke();}
+      orgs1.forEach(o=>{
+        o.vx+=(Math.random()-0.5)*0.22*speedMult;
+        o.vy+=(Math.random()-0.5)*0.22*speedMult;
+        const sp=Math.sqrt(o.vx*o.vx+o.vy*o.vy), mx=3.2*speedMult;
+        if(sp>mx){o.vx*=mx/sp;o.vy*=mx/sp;}
+        const px=cx-o.x, py=cy-o.y, d=Math.sqrt(px*px+py*py)||1;
+        o.vx+=(py/d)*0.07*speedMult; o.vy+=(-px/d)*0.07*speedMult;
+        o.x+=o.vx; o.y+=o.vy;
+        o.deform=Math.min(sp*0.18,0.38);
+        if(o.x-o.r<vX1+4){o.x=vX1+4+o.r;o.vx=Math.abs(o.vx);}
+        if(o.x+o.r>vX1+vW1-4){o.x=vX1+vW1-4-o.r;o.vx=-Math.abs(o.vx);}
+        if(o.y-o.r<vY1+4){o.y=vY1+4+o.r;o.vy=Math.abs(o.vy);}
+        if(o.y+o.r>vY1+vH1-8){o.y=vY1+vH1-8-o.r;o.vy=-Math.abs(o.vy);}
+        drawOrganoid(ctx1,o.x,o.y,o.r,o.deform,o.deformDir,true);
+        o.deformDir+=0.04*speedMult;
+      });
+      requestAnimationFrame(drawDynamic);
+    }
+
+    /* STATIC */
+    const sta = setupCanvas('cStatic');
+    if (!sta) return;
+    const W2=sta.W, H2=sta.H, ctx2=sta.ctx;
+    const vX2=W2*0.10, vY2=14, vW2=W2*0.80, vH2=H2-20;
+    const orgs2 = Array.from({length:6},(_,i)=>{
+      const col=i%3, row=Math.floor(i/3);
+      return { x:vX2+vW2*(0.18+col*0.32), y:vY2+vH2*(0.30+row*0.38), r:13+Math.random()*5, phase:Math.random()*Math.PI*2 };
+    });
+    orgs2.forEach(o=>{o.bx=o.x;o.by=o.y;});
+    let t2=0, flo=0;
+
+    function drawStatic() {
+      ctx2.clearRect(0,0,W2,H2);
+      t2+=0.025*speedMult; flo=(flo+1.3*speedMult)%40;
+      ctx2.fillStyle='rgba(0,25,20,0.65)';
+      rrect(ctx2,vX2,vY2,vW2,vH2,10); ctx2.fill();
+      ctx2.strokeStyle='#5aada0'; ctx2.lineWidth=2;
+      rrect(ctx2,vX2,vY2,vW2,vH2,10); ctx2.stroke();
+      const nc=6, cw=vW2/nc;
+      for(let c=0;c<nc;c++){
+        const x=vX2+c*cw+cw/2;
+        for(let ys=vY2+vH2-flo;ys>vY2;ys-=40){
+          ctx2.strokeStyle='rgba(0,200,160,0.55)'; ctx2.lineWidth=1.5;
+          ctx2.beginPath();ctx2.moveTo(x,ys);ctx2.lineTo(x,ys-18);ctx2.stroke();
+          ctx2.beginPath();ctx2.moveTo(x-4,ys-12);ctx2.lineTo(x,ys-18);ctx2.lineTo(x+4,ys-12);ctx2.stroke();
+        }
+      }
+      orgs2.forEach(o=>{
+        o.x=o.bx+Math.sin(t2*0.7+o.phase)*2;
+        o.y=o.by+Math.sin(t2+o.phase)*3.2;
+        drawOrganoid(ctx2,o.x,o.y,o.r,0.02,0,false);
+      });
+      requestAnimationFrame(drawStatic);
+    }
+
+    /* HELPERS */
+    function rrect(ctx,x,y,w,h,r){
+      ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+      ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);
+      ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);
+      ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);
+      ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
+    }
+
+    function drawOrganoid(ctx,x,y,r,deform,dir,stressed){
+      ctx.save(); ctx.translate(x,y); ctx.rotate(dir);
+      const rx=r*(1+deform), ry=r*(1-deform*0.5);
+      ctx.beginPath(); ctx.ellipse(0,0,rx,ry,0,0,Math.PI*2);
+      const g=ctx.createRadialGradient(-rx*0.25,-ry*0.25,rx*0.05,0,0,rx);
+      g.addColorStop(0,'#fcd5a0'); g.addColorStop(0.6,'#f59e60'); g.addColorStop(1,'#c97a30');
+      ctx.fillStyle=g; ctx.fill();
+      ctx.strokeStyle='#c97a30'; ctx.lineWidth=1.2; ctx.stroke();
+      for(let i=0;i<5;i++){
+        const a=(i/5)*Math.PI*2;
+        ctx.beginPath();ctx.arc(Math.cos(a)*rx*0.38,Math.sin(a)*ry*0.38,rx*0.22,0,Math.PI*2);
+        ctx.strokeStyle='rgba(180,100,30,0.3)';ctx.lineWidth=0.8;ctx.stroke();
+      }
+      ctx.beginPath();ctx.arc(0,0,rx*0.2,0,Math.PI*2);
+      ctx.fillStyle='rgba(150,80,20,0.45)';ctx.fill();
+      if(stressed&&deform>0.1){
+        ctx.strokeStyle='rgba(220,60,60,0.6)';ctx.lineWidth=1.5;
+        for(let s=0;s<3;s++){
+          const sa=(s/3)*Math.PI*2+dir;
+          ctx.beginPath();ctx.moveTo(Math.cos(sa)*(rx+4),Math.sin(sa)*(ry+4));
+          ctx.lineTo(Math.cos(sa)*(rx+11),Math.sin(sa)*(ry+11));ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+
+    function drawImpeller(ctx,cx,cy,r,angle){
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
+      ctx.strokeStyle='#777'; ctx.lineWidth=3; ctx.lineCap='round';
+      for(let i=0;i<4;i++){
+        const a=(i/4)*Math.PI*2;
+        ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);ctx.stroke();
+        ctx.beginPath();ctx.ellipse(Math.cos(a)*r,Math.sin(a)*r,8,4,a,0,Math.PI*2);
+        ctx.fillStyle='#999';ctx.fill();ctx.stroke();
+      }
+      ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fillStyle='#555';ctx.fill();
+      ctx.restore();
+    }
+
+    drawDynamic();
+    drawStatic();
+  })();
+  let current = 0;
+  const track = document.getElementById('carousel-track');
+  const dots  = document.querySelectorAll('#dots span');
+  function goTo(i) {
+    current = i;
+    track.style.transform = `translateX(-${i * 100}%)`;
+    dots.forEach((d, j) => d.classList.toggle('active', j === i));
+  }
+
+  // Survey
+  const messages = {
+    yes:       ['이 문제는 많은 연구자들이 공통적으로 겪고 있습니다. NoStir Platform이 실질적인 해결책이 될 수 있습니다.', '오가노이드 품질 문제는 연구 및 생산 효율에 직접적인 영향을 미칩니다. 함께 해결책을 찾아봐요.'],
+    sometimes: ['Even occasional issues add up. A more predictable culture environment can make a real difference.', 'Intermittent variation still costs time and resources. Stabilizing your culture environment can help.'],
+    no:        ['Great to hear! We\'d love to learn what approaches are working well for you.', 'That\'s good news. We\'d still be happy to share how our approach could further enhance your workflow.']
+  };
+
+  const selected = { 1: null, 2: null };
+
+  function answer(q, val) {
+    selected[q] = val;
+    const btns = document.querySelectorAll(`.survey-card:nth-child(${q}) .btn-ans`);
+    btns.forEach(b => { b.classList.remove('selected','selected-no'); });
+    event.currentTarget.classList.add(val === 'no' ? 'selected-no' : 'selected');
+    const result = document.getElementById(`result-${q}`);
+    result.textContent = messages[val][q - 1];
+    result.className = 'survey-result show';
+  }
+</script>
+</body>
+</html>
