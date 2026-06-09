@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NoStir — 문의 및 자료 요청</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --navy: #0B1527;
+    --navy-mid: #12213A;
+    --navy-card: #162540;
+    --blue: #1E6FD9;
+    --blue-light: #3A8EF6;
+    --blue-glow: rgba(30,111,217,0.18);
+    --text: #E8EEF8;
+    --text-muted: #7A90B0;
+    --border: rgba(30,111,217,0.22);
+    --border-focus: rgba(58,142,246,0.7);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Background ── */
+  .bg-layer {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 20%, rgba(30,111,217,0.13) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 85% 80%, rgba(30,111,217,0.09) 0%, transparent 55%);
+  }
+  .grid-lines {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(30,111,217,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,111,217,0.045) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  /* ── Layout ── */
+  .page-wrap {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 60px 20px 80px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .logo-row {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .logo-mark {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px; color: #fff;
+    letter-spacing: -1px;
+    box-shadow: 0 0 24px rgba(30,111,217,0.5);
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-size: 26px; font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #ffffff 0%, var(--blue-light) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(30,111,217,0.15);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 12px; font-weight: 600; color: var(--blue-light);
+    letter-spacing: 0.4px;
+    margin-bottom: 18px;
+  }
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--blue-light);
+    box-shadow: 0 0 8px var(--blue-light);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  h1 {
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 800; line-height: 1.25;
+    letter-spacing: -0.8px;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  h1 span { color: var(--blue-light); }
+
+  .subtitle {
+    font-size: 15px; line-height: 1.7;
+    color: var(--text-muted);
+    max-width: 480px; margin: 0 auto;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%; max-width: 540px;
+    padding: 40px 36px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+
+  /* ── Type tabs ── */
+  .type-tabs {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-bottom: 32px;
+  }
+  .tab-btn {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .tab-btn .tab-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+  .tab-btn .tab-label {
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    font-family: 'Pretendard', sans-serif;
+  }
+  .tab-btn.active {
+    background: rgba(30,111,217,0.18);
+    border-color: var(--blue);
+    box-shadow: 0 0 16px var(--blue-glow);
+  }
+  .tab-btn.active .tab-label { color: var(--blue-light); }
+
+  /* ── Form ── */
+  .form-group { margin-bottom: 20px; }
+  .form-label {
+    display: block;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.2px;
+  }
+  .form-label span { color: var(--blue-light); margin-left: 2px; }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 15px; font-weight: 500;
+    color: var(--text);
+    font-family: 'Pretendard', sans-serif;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-input::placeholder, .form-textarea::placeholder {
+    color: rgba(120,144,176,0.5);
+    font-weight: 400;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(30,111,217,0.15);
+  }
+
+  .form-select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237A90B0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+  .form-select option { background: #162540; }
+
+  .form-textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* ── Message box (conditional) ── */
+  .msg-box {
+    background: rgba(30,111,217,0.08);
+    border: 1px dashed rgba(30,111,217,0.3);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 13px; color: var(--text-muted); line-height: 1.6;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .msg-box.visible { display: block; }
+  .msg-box strong { color: var(--blue-light); }
+
+  /* ── Submit ── */
+  .submit-btn {
+    width: 100%; padding: 15px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    border: none; border-radius: var(--radius-sm);
+    font-family: 'Pretendard', sans-serif;
+    font-size: 15px; font-weight: 700;
+    color: #fff; cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(30,111,217,0.4);
+    position: relative; overflow: hidden;
+  }
+  .submit-btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .submit-btn:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 6px 28px rgba(30,111,217,0.55); }
+  .submit-btn:hover::after { opacity: 1; }
+  .submit-btn:active { transform: translateY(0); }
+
+  .privacy-note {
+    margin-top: 14px;
+    font-size: 12px; color: var(--text-muted);
+    text-align: center; line-height: 1.6;
+  }
+  .privacy-note a { color: var(--blue-light); text-decoration: none; }
+
+  /* ── Success ── */
+  .success-box {
+    display: none;
+    flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 20px 0;
+    animation: fadeUp 0.5s ease both;
+  }
+  .success-box.show { display: flex; }
+  .success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(30,111,217,0.15);
+    border: 2px solid var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; margin-bottom: 20px;
+    box-shadow: 0 0 30px var(--blue-glow);
+  }
+  .success-box h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .success-box p { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+  .reset-btn {
+    margin-top: 24px; padding: 10px 28px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Pretendard', sans-serif;
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--blue); color: var(--blue-light); }
+
+  /* ── Footer ── */
+  .page-footer {
+    margin-top: 40px; text-align: center;
+    font-size: 12px; color: rgba(122,144,176,0.5);
+    animation: fadeUp 0.9s 0.2s ease both;
+  }
+  .page-footer a { color: var(--text-muted); text-decoration: none; }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  /* ── Admin FAB ── */
+  .admin-toggle {
+    position: fixed; bottom: 24px; right: 24px; z-index: 100;
+    background: var(--navy-card); border: 1px solid var(--border);
+    border-radius: 100px; padding: 10px 18px;
+    font-size: 12px; font-weight: 600; color: var(--text-muted);
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    font-family: 'Pretendard', sans-serif;
+  }
+  .admin-toggle:hover { border-color: var(--blue); color: var(--blue-light); }
+  .count-badge {
+    display: inline-block; background: var(--blue);
+    color: #fff; border-radius: 100px; font-size: 11px;
+    padding: 1px 7px; margin-left: 6px;
+  }
+
+  /* ── Admin Panel ── */
+  .admin-panel {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(7,11,20,0.93); backdrop-filter: blur(14px);
+    flex-direction: column; padding: 32px;
+    overflow-y: auto;
+  }
+  .admin-panel.open { display: flex; animation: fadeUp 0.3s ease both; }
+  .admin-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+  }
+  .admin-title { font-size: 20px; font-weight: 800; color: #fff; }
+  .admin-title span { color: var(--blue-light); }
+  .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .btn-excel {
+    display: flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, #1a7a42 0%, #2ECC8A 100%);
+    border: none; border-radius: var(--radius-sm); padding: 10px 20px;
+    font-family: 'Pretendard', sans-serif; font-size: 14px; font-weight: 700;
+    color: #fff; cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+    box-shadow: 0 4px 16px rgba(46,204,138,0.35);
+  }
+  .btn-excel:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .btn-clear {
+    background: transparent; border: 1px solid rgba(224,90,90,0.4);
+    border-radius: var(--radius-sm); padding: 10px 16px;
+    font-family: 'Pretendard', sans-serif; font-size: 13px; font-weight: 600;
+    color: rgba(224,90,90,0.7); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-clear:hover { border-color: #e05a5a; color: #e05a5a; }
+
+  .btn-close {
+    background: transparent; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 10px 16px;
+    font-family: 'Pretendard', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-close:hover { border-color: var(--blue); color: var(--blue-light); }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; min-width: 860px; }
+  thead tr { background: rgba(30,111,217,0.18); }
+  thead th {
+    padding: 12px 14px; text-align: left;
+    font-size: 12px; font-weight: 700; color: var(--blue-light);
+    letter-spacing: 0.4px; white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr { border-bottom: 1px solid rgba(30,111,217,0.1); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(30,111,217,0.07); }
+  tbody td { padding: 12px 14px; font-size: 13px; color: var(--text); vertical-align: top; max-width: 200px; word-break: break-word; }
+  td.type-sample { color: var(--blue-light); font-weight: 600; }
+  td.type-data { color: #2ECC8A; font-weight: 600; }
+
+  .empty-state {
+    text-align: center; padding: 56px 20px;
+    font-size: 14px; color: var(--text-muted);
+  }
+  .empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .card { padding: 28px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .admin-panel { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="grid-lines"></div>
+
+<div class="page-wrap">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo-row">
+      <div class="logo-mark">N</div>
+      <div class="logo-text">NoStir</div>
+    </div>
+    <div class="badge">Sample &amp; Resource Request</div>
+    <h1>더 알고 싶으신가요?<br /><span>샘플 또는 자료를 요청해보세요.</span></h1>
+    <p class="subtitle">
+      NoStir Platform에 대한 기술 자료나 파일럿 샘플을 신청하실 수 있습니다.<br />
+      연락처를 남겨주시면 담당자가 빠르게 연락드립니다.
+    </p>
+  </header>
+
+  <!-- Card -->
+  <div class="card">
+
+    <!-- Form -->
+    <div id="formContent">
+      <!-- Type tabs -->
+      <div class="type-tabs">
+        <button class="tab-btn active" data-type="sample" onclick="selectType(this)">
+          <span class="tab-icon">🧫</span>
+          <span class="tab-label">샘플 요청</span>
+        </button>
+        <button class="tab-btn" data-type="data" onclick="selectType(this)">
+          <span class="tab-icon">📄</span>
+          <span class="tab-label">기술 자료 요청</span>
+        </button>
+      </div>
+
+      <!-- Hint -->
+      <div class="msg-box visible" id="hintBox">
+        <strong>샘플 요청</strong> — 파일럿 테스트용 NoStir 바이오프로세서 샘플을 신청합니다. 수령 후 담당자가 일정을 조율해 드립니다.
+      </div>
+
+      <!-- Fields -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="name">이름 <span>*</span></label>
+          <input class="form-input" id="name" type="text" placeholder="홍길동" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="position">직책 <span>*</span></label>
+          <input class="form-input" id="position" type="text" placeholder="연구원 / 교수 / CTO" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="org">소속 기관 / 기업 <span>*</span></label>
+        <input class="form-input" id="org" type="text" placeholder="대학교, 연구소, 기업명 등" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="dept">부서 / 연구실</label>
+        <input class="form-input" id="dept" type="text" placeholder="세포치료연구실 / 바이오공정팀" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">이메일 <span>*</span></label>
+        <input class="form-input" id="email" type="email" placeholder="example@institute.ac.kr" />
+      </div>
+
+      <div class="form-group" id="interestGroup">
+        <label class="form-label" for="interest">관심 분야</label>
+        <select class="form-select" id="interest">
+          <option value="">— 해당 항목을 선택해주세요 —</option>
+          <option>오가노이드 배양 / Organoid Culture</option>
+          <option>세포치료제 생산 / Cell Therapy Manufacturing</option>
+          <option>줄기세포 대량배양 / Stem Cell Scale-up</option>
+          <option>CAR-T / 면역세포치료</option>
+          <option>GMP 공정 개발</option>
+          <option>기타 / Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="message">추가 문의 사항</label>
+        <textarea class="form-textarea" id="message" placeholder="궁금한 점이나 요청 사항을 자유롭게 남겨주세요."></textarea>
+      </div>
+
+      <button class="submit-btn" onclick="handleSubmit()">요청 제출하기 →</button>
+
+      <p class="privacy-note">
+        입력하신 정보는 요청 처리 목적으로만 사용되며, 제3자에게 제공되지 않습니다.
+      </p>
+    </div>
+
+    <!-- Success -->
+    <div class="success-box" id="successBox">
+      <div class="success-icon">✓</div>
+      <h3>요청이 접수되었습니다!</h3>
+      <p>빠른 시일 내에 입력하신 이메일로 연락드리겠습니다.<br/>NoStir에 관심 가져주셔서 감사합니다.</p>
+      <button class="reset-btn" onclick="resetForm()">다시 작성하기</button>
+    </div>
+
+  </div>
+
+  <footer class="page-footer">
+    © 2025 위지위그 (WYSIWYG) · NoStir Platform<br />
+    <a href="mailto:contact@nostir.io">contact@nostir.io</a>
+  </footer>
+
+</div>
+
+<!-- Admin FAB -->
+<button class="admin-toggle" onclick="openAdmin()">
+  관리자 <span class="count-badge" id="countBadge">0</span>
+</button>
+
+<!-- Admin Panel -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-header">
+    <div class="admin-title">📋 문의 접수 현황 <span id="adminCount"></span></div>
+    <div class="admin-actions">
+      <button class="btn-excel" onclick="exportExcel()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+        엑셀 다운로드 (.xlsx)
+      </button>
+      <button class="btn-clear" onclick="clearData()">전체 삭제</button>
+      <button class="btn-close" onclick="closeAdmin()">닫기</button>
+    </div>
+  </div>
+  <div class="table-wrap" id="tableWrap"></div>
+</div>
+
+<script>
+  // ──────────────────────────────────────────────
+  //  ▼ Apps Script 배포 후 여기에 URL을 입력하세요
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyo7yOlTsiyUgkwncrTIoYRkZHtPCc6pV1-dYxfzdegiOvQwn7iGtXGYQFIxFYnWUvd/exec';
+  // ──────────────────────────────────────────────
+
+  const STORAGE_KEY = 'nostir_submissions';
+  const hints = {
+    sample: '<strong>샘플 요청</strong> — 파일럿 테스트용 NoStir 바이오프로세서 샘플을 신청합니다. 수령 후 담당자가 일정을 조율해 드립니다.',
+    data:   '<strong>기술 자료 요청</strong> — White paper, 기술 브로셔, 성능 데이터 등 상세 자료를 이메일로 받아보실 수 있습니다.'
+  };
+  let currentType = 'sample';
+  let isSubmitting = false;
+
+  function getSubmissions() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+  }
+  function saveSubmissions(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+  function updateBadge() { document.getElementById('countBadge').textContent = getSubmissions().length; }
+
+  function selectType(btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentType = btn.dataset.type;
+    document.getElementById('hintBox').innerHTML = hints[currentType];
+  }
+
+  function setSubmitState(loading) {
+    isSubmitting = loading;
+    const btn = document.querySelector('.submit-btn');
+    btn.disabled = loading;
+    btn.textContent = loading ? '전송 중…' : '요청 제출하기 →';
+    btn.style.opacity = loading ? '0.6' : '';
+  }
+
+  async function handleSubmit() {
+    if (isSubmitting) return;
+    const required = ['name','position','org','email'];
+    let valid = true;
+    required.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el.value.trim()) {
+        el.style.borderColor = '#e05a5a';
+        el.style.boxShadow = '0 0 0 3px rgba(224,90,90,0.15)';
+        valid = false;
+        el.addEventListener('input', () => { el.style.borderColor=''; el.style.boxShadow=''; }, { once:true });
+      }
+    });
+    if (!valid) return;
+    const emailVal = document.getElementById('email').value;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+      const el = document.getElementById('email');
+      el.style.borderColor = '#e05a5a';
+      el.style.boxShadow = '0 0 0 3px rgba(224,90,90,0.15)';
+      return;
+    }
+
+    const entry = {
+      접수일시: new Date().toLocaleString('ko-KR'),
+      요청유형: currentType === 'sample' ? '샘플 요청' : '기술 자료 요청',
+      이름: document.getElementById('name').value.trim(),
+      직책: document.getElementById('position').value.trim(),
+      소속: document.getElementById('org').value.trim(),
+      부서: document.getElementById('dept').value.trim(),
+      이메일: emailVal,
+      관심분야: document.getElementById('interest').value,
+      문의내용: document.getElementById('message').value.trim()
+    };
+
+    // ── localStorage 백업 (항상 저장) ──
+    const arr = getSubmissions();
+    entry.no = arr.length + 1;
+    arr.push(entry);
+    saveSubmissions(arr);
+    updateBadge();
+
+    // ── Google Sheets 전송 ──
+    if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+      setSubmitState(true);
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          // no-cors에서 application/json은 preflight를 유발해 차단됨.
+          // text/plain은 단순 요청으로 처리되어 Apps Script까지 본문이 전달됨.
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify(entry)
+        });
+      } catch (err) {
+        console.warn('Google Sheets 전송 실패 (로컬 저장 완료):', err);
+      } finally {
+        setSubmitState(false);
+      }
+    }
+
+    document.getElementById('formContent').style.display = 'none';
+    document.getElementById('successBox').classList.add('show');
+  }
+
+  function resetForm() {
+    document.getElementById('formContent').style.display = 'block';
+    document.getElementById('successBox').classList.remove('show');
+    ['name','position','org','dept','email','message'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('interest').selectedIndex = 0;
+    document.querySelectorAll('.tab-btn')[0].click();
+  }
+
+  // ── Admin ──
+  function openAdmin() { renderTable(); document.getElementById('adminPanel').classList.add('open'); }
+  function closeAdmin() { document.getElementById('adminPanel').classList.remove('open'); }
+
+  function renderTable() {
+    const arr = getSubmissions();
+    document.getElementById('adminCount').textContent = `— 총 ${arr.length}건`;
+    const wrap = document.getElementById('tableWrap');
+    if (arr.length === 0) {
+      wrap.innerHTML = '<div class="empty-state"><span class="empty-icon">📭</span>아직 접수된 요청이 없습니다.</div>';
+      return;
+    }
+    const cols   = ['no','접수일시','요청유형','이름','직책','소속','부서','이메일','관심분야','문의내용'];
+    const labels = ['#','접수일시','요청 유형','이름','직책','소속','부서','이메일','관심 분야','문의 내용'];
+    let html = '<table><thead><tr>' + labels.map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+    arr.slice().reverse().forEach(row => {
+      html += '<tr>' + cols.map(k => {
+        let cls = '';
+        if (k==='요청유형') cls = row[k].includes('샘플') ? ' class="type-sample"' : ' class="type-data"';
+        return `<td${cls}>${row[k] || '—'}</td>`;
+      }).join('') + '</tr>';
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+  }
+
+  // ── Excel Export ──
+  function exportExcel() {
+    const arr = getSubmissions();
+    if (arr.length === 0) { alert('접수된 데이터가 없습니다.'); return; }
+
+    const cols   = ['no','접수일시','요청유형','이름','직책','소속','부서','이메일','관심분야','문의내용'];
+    const labels = ['#','접수일시','요청 유형','이름','직책','소속','부서','이메일','관심 분야','문의 내용'];
+    const widths  = [5, 20, 14, 12, 14, 24, 18, 30, 28, 40];
+
+    const wsData = [labels, ...arr.map(r => cols.map(k => r[k] || ''))];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols'] = widths.map(w => ({ wch: w }));
+    ws['!freeze'] = { xSplit: 0, ySplit: 1 }; // freeze header row
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '문의접수현황');
+
+    const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+    XLSX.writeFile(wb, `NoStir_문의접수현황_${today}.xlsx`);
+  }
+
+  function clearData() {
+    if (!confirm('모든 접수 데이터를 삭제합니다.\n이 작업은 되돌릴 수 없습니다.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    updateBadge();
+    renderTable();
+  }
+
+  updateBadge();
+</script>
+</body>
+</html>
